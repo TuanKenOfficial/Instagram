@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText emailIT, passwordIT;
     Button login;
     TextView dangnhap, passwordFG;
+    ImageButton backBtn;
     ProgressDialog pd;
     FirebaseAuth mAuth;
 
@@ -42,17 +44,24 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
-        emailIT = findViewById(R.id.emailIT);
-        passwordIT = findViewById(R.id.passwordIT);
-        login = findViewById(R.id.login);
-        dangnhap = findViewById(R.id.dangnhap);
-        passwordFG = findViewById(R.id.passwordFG);
+        emailIT = findViewById(R.id.emailEt);
+        passwordIT = findViewById(R.id.passwordEt);
+        login = findViewById(R.id.loginBtn);
+        dangnhap = findViewById(R.id.noAccountTv);
+        passwordFG = findViewById(R.id.noPasswordTv);
+        backBtn = findViewById(R.id.backBtn);
 
 
         mAuth = FirebaseAuth.getInstance();
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         dangnhap.setOnClickListener(view -> startActivity(new Intent(LoginActivity.this,
                 RegisterActivity.class)));
+
         login.setOnClickListener(view -> {
 
             String str_email = emailIT.getText().toString();

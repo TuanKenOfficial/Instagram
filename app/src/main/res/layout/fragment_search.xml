@@ -28,7 +28,7 @@
                 android:layout_marginLeft="10dp"
                 android:background="@android:color/transparent"
                 android:hint="Tìm kiếm..."
-                android:textColor="@color/colorAccent"
+                android:textColor="@color/colorBlack"
                 android:minHeight="48dp" />
 
         </androidx.appcompat.widget.Toolbar>

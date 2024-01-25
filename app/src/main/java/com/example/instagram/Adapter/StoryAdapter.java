@@ -165,10 +165,10 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder> 
                     }
                 }else {
                     if (count>0){
-                        textView.setText("Ảnh của tôi");
+                        textView.setText("Ảnh");
                         imageView.setVisibility(View.GONE);
                     }else {
-                        textView.setText("Đăng ảnh");
+                        textView.setText("Đăng story");
                         imageView.setVisibility(View.VISIBLE);
                     }
                 }

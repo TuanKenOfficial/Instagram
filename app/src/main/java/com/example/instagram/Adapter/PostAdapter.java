@@ -115,13 +115,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         viewHolder.like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (viewHolder.like.getTag().equals("thích")) {
-                    FirebaseDatabase.getInstance().getReference().child("Thích").child(post.getPostid())
+                if (viewHolder.like.getTag().equals("Like")) {
+                    FirebaseDatabase.getInstance().getReference().child("Like").child(post.getPostid())
                             .child(firebaseUser.getUid()).setValue(true);
                     //tạo thông báo
                     addNotification(post.getPostid(), post.getPublisher());
                 } else {
-                    FirebaseDatabase.getInstance().getReference().child("Thích").child(post.getPostid())
+                    FirebaseDatabase.getInstance().getReference().child("Like").child(post.getPostid())
                             .child(firebaseUser.getUid()).removeValue();
                 }
             }
@@ -188,7 +188,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, FollowersActivity.class);
                 intent.putExtra("id", post.getPostid());
-                intent.putExtra("title", "Thích");
+                intent.putExtra("title", "Like");
                 mContext.startActivity(intent);
             }
         });
@@ -242,7 +242,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot datasnapshot) {
-                comments.setText("Tất cả  " + datasnapshot.getChildrenCount() + " bình luận");
+                comments.setText("Xem tất cả "+datasnapshot.getChildrenCount()+ " bình luận");
             }
 
             @Override
@@ -256,7 +256,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     private void Liked(String postid, ImageView imageView) {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Thích").child(postid);
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Like").child(postid);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot datasnapshot) {
@@ -281,7 +281,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications").child(firebaseUser.getUid());
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("userid", userid);
-        hashMap.put("text", "Đã thích ảnh");
+        hashMap.put("text", "thích ảnh của bạn");
         hashMap.put("postid", postid);
         hashMap.put("ispost", true);
 
@@ -290,11 +290,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     //notlike
     private void notlikes(TextView likes, String postid) {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Thích").child(postid);
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Like").child(postid);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot datasnapshot) {
-                likes.setText(datasnapshot.getChildrenCount() + " Thích");
+                likes.setText(datasnapshot.getChildrenCount() + " lượt thích");
             }
 
             @Override

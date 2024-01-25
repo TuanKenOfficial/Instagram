@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.instagram"
-        minSdk 19
+        minSdk 21
         multiDexEnabled true
         targetSdk 33
         versionCode 1

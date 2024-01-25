@@ -58,13 +58,13 @@ public class FollowersActivity extends AppCompatActivity {
         idList = new ArrayList<>();
 
         switch (title){
-            case "Thích":
+            case "Like":
                 getLikes();
                 break;
-            case  "đang theo dõi":
+            case  "Following":
                 getFollowing();
                 break;
-            case "người theo dõi":
+            case "Follower":
                 getFollowers();
                 break;
             case "lượt xem":
@@ -95,7 +95,7 @@ public class FollowersActivity extends AppCompatActivity {
 
     //likes
     private void getLikes() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Thích")
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Like")
                 .child(id);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -115,8 +115,8 @@ public class FollowersActivity extends AppCompatActivity {
     }
     //following
     private void getFollowing() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Theo dõi")
-                .child(id).child("đang theo dõi");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Follow")
+                .child(id).child("Following");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -135,8 +135,8 @@ public class FollowersActivity extends AppCompatActivity {
     }
     //followers
     private void getFollowers() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Theo dõi")
-                .child(id).child("người theo dõi");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Follow")
+                .child(id).child("Follower");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

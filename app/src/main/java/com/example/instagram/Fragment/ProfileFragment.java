@@ -105,7 +105,7 @@ public class ProfileFragment extends Fragment {
         mysaves();
 
         if (profileid.equals(firebaseUser.getUid())){
-            edit_profile.setText("Chỉnh sửa hồ sơ");
+            edit_profile.setText("Chỉnh sửa trang cá nhân");
         }else {
             checkFollow();
             saved_photo.setVisibility(View.GONE);
@@ -115,19 +115,19 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 String btn = edit_profile.getText().toString();
-                if (btn.equals("Chỉnh sửa hồ sơ")){
+                if (btn.equals("Chỉnh sửa trang cá nhân")){
                    startActivity(new Intent(getContext(), EditProfileActivity.class));
-                }else if (btn.equals("theo dõi")){
-                    FirebaseDatabase.getInstance().getReference().child("Theo dõi").child(firebaseUser.getUid())
-                            .child("đang theo dõi").child(profileid).setValue(true);
-                    FirebaseDatabase.getInstance().getReference().child("Theo dõi").child(profileid)
-                            .child("người theo dõi").child(firebaseUser.getUid()).setValue(true);
+                }else if (btn.equals("Follower")){
+                    FirebaseDatabase.getInstance().getReference().child("Follow").child(firebaseUser.getUid())
+                            .child("Following").child(profileid).setValue(true);
+                    FirebaseDatabase.getInstance().getReference().child("Follow").child(profileid)
+                            .child("Follower").child(firebaseUser.getUid()).setValue(true);
 
-                }else if (btn.equals("đang theo dõi")){
-                    FirebaseDatabase.getInstance().getReference().child("Theo dõi").child(firebaseUser.getUid())
-                            .child("đang theo dõi").child(profileid).removeValue();
-                    FirebaseDatabase.getInstance().getReference().child("Theo dõi").child(profileid)
-                            .child("người theo dõi").child(firebaseUser.getUid()).removeValue();
+                }else if (btn.equals("Following")){
+                    FirebaseDatabase.getInstance().getReference().child("Follow").child(firebaseUser.getUid())
+                            .child("Following").child(profileid).removeValue();
+                    FirebaseDatabase.getInstance().getReference().child("Follow").child(profileid)
+                            .child("Follower").child(firebaseUser.getUid()).removeValue();
                 }
             }
         });
@@ -157,7 +157,7 @@ public class ProfileFragment extends Fragment {
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), FollowersActivity.class);
                 intent.putExtra("id",profileid);
-                intent.putExtra("title", "người theo dõi");
+                intent.putExtra("title", "Follower");
                 startActivity(intent);
             }
         });
@@ -167,7 +167,7 @@ public class ProfileFragment extends Fragment {
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), FollowersActivity.class);
                 intent.putExtra("id",profileid);
-                intent.putExtra("title", "đang theo dõi");
+                intent.putExtra("title", "Following");
                 startActivity(intent);
             }
         });
@@ -196,15 +196,15 @@ public class ProfileFragment extends Fragment {
     }
 
     private void checkFollow(){
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Theo dõi")
-                .child(firebaseUser.getUid()).child("đang theo dõi");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Follow")
+                .child(firebaseUser.getUid()).child("Following");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot datasnapshot) {
                 if (datasnapshot.child(profileid).exists()){
-                    edit_profile.setText("đang theo dõi");
+                    edit_profile.setText("Following");
                 }else {
-                    edit_profile.setText("theo dõi");
+                    edit_profile.setText("Follower");
                 }
             }
 
@@ -259,8 +259,8 @@ public class ProfileFragment extends Fragment {
         });
     }
     private void getFollower(){
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Theo dõi")
-                .child(profileid).child("người theo dõi");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Follow")
+                .child(profileid).child("Follower");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot datasnapshot) {
@@ -275,8 +275,8 @@ public class ProfileFragment extends Fragment {
 
     }
     private void getFollowing(){
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Theo dõi")
-                .child(profileid).child("đang theo dõi");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Follow")
+                .child(profileid).child("Following");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot datasnapshot) {
@@ -303,9 +303,9 @@ public class ProfileFragment extends Fragment {
                 //hình ảnh user bên profile */
                 Picasso.get().load(user.getImageurl()).placeholder(R.drawable.userlogo).into(image_profile);
 
-                username.setText(user.getUsername());
-                fullname.setText(user.getFullname());
-                bio.setText(user.getBio());
+                username.setText("Tên: "+user.getUsername());
+                fullname.setText("Họ và tên: "+user.getFullname());
+                bio.setText("Tiểu sử: "+user.getBio());
             }
 
             @Override

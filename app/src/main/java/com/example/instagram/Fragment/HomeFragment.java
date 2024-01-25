@@ -1,10 +1,13 @@
 package com.example.instagram.Fragment;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -31,21 +34,26 @@ import java.util.List;
 public class HomeFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private PostAdapter postAdapter;
-    private List<Post> postLists;
-    ProgressBar progressBar;
 
     private RecyclerView recyclerView_story;
     private StoryAdapter storyAdapter;
+    private PostAdapter postAdapter;
+
+    private List<Post> postLists;
     private  List<Story> storyList;
-
-
     private List<String> followingList;
+
+
+    ProgressBar progressBar;
+    private ImageView chats;
+
+    @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        chats = view.findViewById(R.id.chats);
         recyclerView = view.findViewById(R.id.recycle_view_users);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -66,13 +74,20 @@ public class HomeFragment extends Fragment {
         storyAdapter = new StoryAdapter(getContext(),storyList);
         recyclerView_story.setAdapter(storyAdapter);
         checkFollowing();
+
+        chats.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "Chức năng chat đang hoàn thiện", Toast.LENGTH_SHORT).show();
+            }
+        });
         return view;
     }
 
     private void checkFollowing(){
         followingList = new ArrayList<>();
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Theo dõi")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("đang theo dõi");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Follow")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Following");
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override

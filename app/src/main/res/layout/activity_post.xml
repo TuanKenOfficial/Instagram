@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PostActivity"
-    android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".PostActivity">
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,22 +21,19 @@
 
                 <ImageView
                     android:id="@+id/close"
-                    android:layout_width="wrap_content"
+                    android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_alignParentStart="true"
-                    android:src="@drawable/ic_close" />
+                    android:src="@drawable/backbutton" />
+
 
                 <TextView
-                    android:id="@+id/post"
+                    android:text="Bài viết mới"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginRight="10dp"
-                    android:text="Đăng"
-                    android:textColor="@color/colorPost"
-                    android:textSize="18sp" />
+                    android:layout_centerHorizontal="true"
+                    android:padding="5dp"
+                    android:src="@drawable/backbutton" />
 
             </RelativeLayout>
         </androidx.appcompat.widget.Toolbar>
@@ -45,16 +42,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="3dp"
+        android:layout_below="@id/bar"
         android:orientation="vertical">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:scaleType="centerInside"
-            android:layout_gravity="center"
-            android:src="@mipmap/ic_launcher"
-            android:id="@+id/image_added"/>
-
         <EditText
             android:id="@+id/description"
             android:layout_width="match_parent"
@@ -62,7 +51,30 @@
             android:layout_marginTop="5dp"
             android:hint="Viết chú thích..."
             android:maxLines="5"
-            android:textColor="@color/colorPost" />
-    </LinearLayout>
+            android:textColor="@color/colorBlack" />
 
-</LinearLayout>
+        <ImageView
+            android:id="@+id/image_added"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_marginTop="5dp"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/instagram" />
+
+
+
+    </LinearLayout>
+    <Button
+        android:id="@+id/post"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="Chia sẻ"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="10dp"
+        android:textColor="@color/colorBlack"
+        android:textSize="18sp" />
+
+</RelativeLayout>

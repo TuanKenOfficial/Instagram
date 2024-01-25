@@ -78,6 +78,7 @@ public class CommentsActivity extends AppCompatActivity {
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
+
         post.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

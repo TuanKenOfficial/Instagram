@@ -93,7 +93,7 @@ public class CommentAdapter extends  RecyclerView.Adapter<CommentAdapter.ViewHol
                 if (comment.getPublisher().endsWith(firebaseUser.getUid())) {
                     AlertDialog alertDialog = new AlertDialog.Builder(mContext).create();
                     alertDialog.setTitle("Bạn có muốn xoá không");
-                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "YES", new DialogInterface.OnClickListener() {
+                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Xoá", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             FirebaseDatabase.getInstance().getReference().child("Comments").child(postid)
@@ -108,7 +108,7 @@ public class CommentAdapter extends  RecyclerView.Adapter<CommentAdapter.ViewHol
 
                         }
                     });
-                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "NO", new DialogInterface.OnClickListener() {
+                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Không", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             dialogInterface.dismiss();

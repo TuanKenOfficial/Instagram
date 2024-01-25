@@ -60,14 +60,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
         viewHolder.username.setText(user.getUsername());
         viewHolder.fullname.setText(user.getFullname());
         String hisUID = mUsers.get(position).getId();//hisUID của chatactivity
-        /*Picasso là thư viện tải hình ảnh
-         //load hình ảnh user trong mục search */
-        Picasso.get().load(user.getImageurl()).placeholder(R.drawable.userlogo).into(viewHolder.image_profile);
 
         isFollowed(user.getId(), viewHolder.btn);
         if (user.getId().equals(firebaseUser.getUid())) {
             viewHolder.btn.setVisibility(View.GONE);
         }
+        /*Picasso là thư viện tải hình ảnh
+         //load hình ảnh user trong mục search */
+        Picasso.get().load(user.getImageurl()).placeholder(R.drawable.userlogo).into(viewHolder.image_profile);
         //trong mục search khi chúng ta nhấp vào người dùng thì sẽ chuyển qua mục thông tin người dùng
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,19 +88,19 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
         viewHolder.btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (viewHolder.btn.getText().toString().equals("theo dõi")) {
-                    FirebaseDatabase.getInstance().getReference().child("Theo dõi").child(firebaseUser.getUid())
-                            .child("đang theo dõi").child(user.getId()).setValue(true);
-                    FirebaseDatabase.getInstance().getReference().child("Theo dõi").child(user.getId())
-                            .child("người theo dõi").child(firebaseUser.getUid()).setValue(true);
+                if (viewHolder.btn.getText().toString().equals("Follower")) {
+                    FirebaseDatabase.getInstance().getReference().child("Follow").child(firebaseUser.getUid())
+                            .child("Following").child(user.getId()).setValue(true);
+                    FirebaseDatabase.getInstance().getReference().child("Follow").child(user.getId())
+                            .child("Follower").child(firebaseUser.getUid()).setValue(true);
 
                     //tạo thông báo
                     addNotification(user.getId());
                 } else {
-                    FirebaseDatabase.getInstance().getReference().child("Theo dõi").child(firebaseUser.getUid())
-                            .child("đang theo dõi").child(user.getId()).removeValue();
-                    FirebaseDatabase.getInstance().getReference().child("Theo dõi").child(user.getId())
-                            .child("người theo dõi").child(firebaseUser.getUid()).removeValue();
+                    FirebaseDatabase.getInstance().getReference().child("Follow").child(firebaseUser.getUid())
+                            .child("Following").child(user.getId()).removeValue();
+                    FirebaseDatabase.getInstance().getReference().child("Follow").child(user.getId())
+                            .child("Follower").child(firebaseUser.getUid()).removeValue();
                 }
 
             }
@@ -108,13 +108,33 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
 
 
 
+
+    }
+    private void isFollowed(String id, Button btn) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Follow").child(firebaseUser.getUid())
+                .child("Following");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.child(id).exists())
+                    btn.setText("Following");
+                else
+                    btn.setText("Follower");
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
         //Notification
     private void addNotification(String userid){
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications").child(firebaseUser.getUid());
         HashMap<String,Object> hashMap = new HashMap<>();
         hashMap.put("userid",userid);
-        hashMap.put("text", "Đã bắt đầu theo dõi");
+        hashMap.put("text", "đã bắt đầu theo dõi bạn");
         hashMap.put("postid", "");
         hashMap.put("ispost", false);
 
@@ -139,25 +159,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
 
         }
     }
-    private void isFollowed(String id, Button btn) {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Theo dõi").child(firebaseUser.getUid())
-                .child("đang theo dõi");
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child(id).exists())
-                    btn.setText("đang theo dõi");
-                else
-                    btn.setText("theo dõi");
 
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
 }
 
 

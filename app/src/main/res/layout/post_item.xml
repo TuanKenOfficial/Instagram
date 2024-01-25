@@ -69,6 +69,14 @@
                 android:src="@drawable/ic_comment" />
 
             <ImageView
+                android:id="@+id/share"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="10dp"
+                android:layout_toEndOf="@id/comment"
+                android:src="@drawable/ic_share" />
+
+            <ImageView
                 android:id="@+id/save"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
@@ -77,38 +85,48 @@
 
 
         </RelativeLayout>
-
-        <TextView
-            android:id="@+id/likes"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:textColor="@color/colorAccent"
-            android:textStyle="bold" />
+            android:padding="5dp"
+            android:layout_margin="2dp">
+            <TextView
+                android:id="@+id/likes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textColor="@color/colorBlack"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/publisher"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:textColor="@color/colorUsername" />
+            <TextView
+                android:id="@+id/publisher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/likes"
+                android:layout_marginStart="10dp"
+                android:textColor="@color/colorUsername" />
 
-        <TextView
-            android:id="@+id/description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:textColor="@color/colorAccent" />
+            <TextView
+                android:id="@+id/description"
+                android:layout_below="@id/likes"
+                android:layout_toRightOf="@id/publisher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:textColor="@color/colorBlack" />
 
-        <TextView
-            android:id="@+id/comments"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:text="Tất cả bình luận"
-            android:textColor="@color/colorBlack" />
+            <TextView
+                android:id="@+id/comments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/description"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:text="Tất cả bình luận"
+                android:textColor="@color/colorBlack" />
+
+        </RelativeLayout>
 
     </LinearLayout>
 

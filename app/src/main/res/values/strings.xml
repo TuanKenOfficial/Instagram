@@ -7,8 +7,4 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_home">title_home</string>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
 </resources>
