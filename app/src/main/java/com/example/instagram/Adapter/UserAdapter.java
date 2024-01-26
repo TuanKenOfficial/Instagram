@@ -59,7 +59,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
         viewHolder.btn.setVisibility(View.VISIBLE);
         viewHolder.username.setText(user.getUsername());
         viewHolder.fullname.setText(user.getFullname());
-        String hisUID = mUsers.get(position).getId();//hisUID của chatactivity
 
         isFollowed(user.getId(), viewHolder.btn);
         if (user.getId().equals(firebaseUser.getUid())) {
@@ -130,16 +129,18 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
         });
     }
         //Notification
-    private void addNotification(String userid){
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications").child(firebaseUser.getUid());
-        HashMap<String,Object> hashMap = new HashMap<>();
-        hashMap.put("userid",userid);
-        hashMap.put("text", "đã bắt đầu theo dõi bạn");
-        hashMap.put("postid", "");
-        hashMap.put("ispost", false);
+        private void addNotification(String userid) {
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications");
+            String idNotification = reference.push().getKey();
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("idNotification",idNotification);
+            hashMap.put("userid", userid);
+            hashMap.put("useridanh",firebaseUser.getUid());
+            hashMap.put("text", "đã bắt đầu theo dõi bạn");
+            hashMap.put("ispost", true);
 
-        reference.push().setValue(hashMap);
-    }
+            reference.child(firebaseUser.getUid()).child(idNotification).setValue(hashMap);
+        }
 
     @Override
     public int getItemCount() {

@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,9 +46,10 @@ import java.util.List;
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     public Context mContext;
     public List<Post> mPost;
-//    public List<BaoCao> mBaoCao;
+
 
     private FirebaseUser firebaseUser;
+    private static final String TAG ="Post";
 
     public PostAdapter(Context mContext, List<Post> mPost) {
         this.mContext = mContext;
@@ -115,11 +117,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         viewHolder.like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (viewHolder.like.getTag().equals("Like")) {
+                if (viewHolder.like.getTag().equals("like")) {
                     FirebaseDatabase.getInstance().getReference().child("Like").child(post.getPostid())
                             .child(firebaseUser.getUid()).setValue(true);
                     //tạo thông báo
                     addNotification(post.getPostid(), post.getPublisher());
+                    Log.d(TAG, "onClick: "+post.getPublisher());
                 } else {
                     FirebaseDatabase.getInstance().getReference().child("Like").child(post.getPostid())
                             .child(firebaseUser.getUid()).removeValue();
@@ -262,10 +265,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             public void onDataChange(@NonNull DataSnapshot datasnapshot) {
                 if (datasnapshot.child(firebaseUser.getUid()).exists()) {
                     imageView.setImageResource(R.drawable.ic_liked);
-                    imageView.setTag("không thích");
+                    imageView.setTag("notlike");
                 } else {
                     imageView.setImageResource(R.drawable.ic_like);
-                    imageView.setTag("thích");
+                    imageView.setTag("like");
                 }
             }
 
@@ -277,15 +280,21 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     }
 
     //tạo thông báo
-    private void addNotification(String postid, String userid) {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications").child(firebaseUser.getUid());
+    private void addNotification(String postid, String publisher) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications");
+        String idNotification = reference.push().getKey();
         HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("userid", userid);
+        hashMap.put("idNotification",idNotification);
+        hashMap.put("useridanh",firebaseUser.getUid());
+        hashMap.put("userid", publisher);
         hashMap.put("text", "thích ảnh của bạn");
         hashMap.put("postid", postid);
         hashMap.put("ispost", true);
 
-        reference.push().setValue(hashMap);
+
+        reference.child(firebaseUser.getUid()).child(idNotification).setValue(hashMap);
+
+
     }
 
     //notlike

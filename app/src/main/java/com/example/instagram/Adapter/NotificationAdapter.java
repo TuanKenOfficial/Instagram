@@ -17,6 +17,7 @@ import com.example.instagram.Model.Notification;
 import com.example.instagram.Model.Post;
 import com.example.instagram.Model.User;
 import com.example.instagram.R;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,10 +31,12 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
     private Context mContext;
     private List<Notification> mNotification;
+    private FirebaseAuth firebaseAuth;
 
     public NotificationAdapter(Context context, List<Notification> notificationList) {
         this.mContext = context;
         this.mNotification = notificationList;
+        firebaseAuth = FirebaseAuth.getInstance();
     }
 
     @NonNull
@@ -45,7 +48,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
         final Notification notification = mNotification.get(position);
         viewHolder.text.setText(notification.getText());
-        getUser(viewHolder.image_profile, viewHolder.username, notification.getUserid());
+        getUser(viewHolder.image_profile, viewHolder.username,notification.getUseridanh());
 
         if (notification.isIspost()){
             viewHolder.post_image.setVisibility(View.VISIBLE);
@@ -88,14 +91,14 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
         }
     }
-    private void getUser(final ImageView imageView ,final TextView usernam , String publisherid){
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(publisherid);
+    private void getUser(final ImageView imageView ,final TextView username, String userid){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot datasnapshot) {
                 User user = datasnapshot.getValue(User.class);
                 Picasso.get().load(user.getImageurl()).placeholder(R.drawable.userlogo).into(imageView);
-                usernam.setText(user.getUsername());
+                username.setText(user.getUsername());
             }
 
             @Override

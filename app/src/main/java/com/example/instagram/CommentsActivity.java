@@ -2,6 +2,7 @@ package com.example.instagram;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.instagram.Adapter.CommentAdapter;
 import com.example.instagram.Model.Comment;
+import com.example.instagram.Model.Post;
 import com.example.instagram.Model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,9 +44,10 @@ public class CommentsActivity extends AppCompatActivity {
     TextView post;
 
     String postid;
-    String publisherid;
-
+    String publisher;
     FirebaseUser firebaseUser;
+
+    private static final String TAG = "Comments";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,9 +64,11 @@ public class CommentsActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+
         Intent intent = getIntent();
         postid = intent.getStringExtra("postid");
-        publisherid = intent.getStringExtra("publisherid");
+        Log.d(TAG, "onCreate: postid"+postid);
 
         recyclerView = findViewById(R.id.recycle_view_users);
         recyclerView.setHasFixedSize(true);
@@ -78,6 +83,20 @@ public class CommentsActivity extends AppCompatActivity {
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts");
+        reference.child(postid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                publisher = ""+dataSnapshot.child("publisher").getValue();
+                Log.d(TAG, "onDataChange: publisher: "+publisher);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         post.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,21 +123,24 @@ public class CommentsActivity extends AppCompatActivity {
         hashMap.put("publisher", firebaseUser.getUid());
         hashMap.put("id",id);
         reference.child(id).setValue(hashMap);
-        addNotification();
+        addNotification(postid,publisher);
         addcomment.setText("");
         Toast.makeText(CommentsActivity.this, "Bình luận thành công", Toast.LENGTH_SHORT).show();
 
     }
     //tạo thông báo
-    private void addNotification(){
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications").child(firebaseUser.getUid());
-        HashMap<String,Object> hashMap = new HashMap<>();
-        hashMap.put("userid",firebaseUser.getUid());
-        hashMap.put("text", "Đã nhận xét: "+addcomment.getText().toString());
+    private void addNotification(String postid, String publisher) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications");
+        String idNotification = reference.push().getKey();
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("idNotification",idNotification);
+        hashMap.put("useridanh",firebaseUser.getUid());
+        hashMap.put("userid", publisher);
+        hashMap.put("text", "đã bình luận về bài viết");
         hashMap.put("postid", postid);
         hashMap.put("ispost", true);
 
-        reference.push().setValue(hashMap);
+        reference.child(firebaseUser.getUid()).child(idNotification).setValue(hashMap);
     }
     //tạo ảnh user comment
     private void getUserImage(){

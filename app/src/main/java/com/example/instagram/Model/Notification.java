@@ -1,7 +1,9 @@
 package com.example.instagram.Model;
 
 public class Notification {
-    private String userid;
+    private String idNotification;
+    private String useridanh; //tài khoản người dùng thích ảnh
+    private String userid; // tài khoản người dùng ảnh
     private String text;
     private String postid;
     private boolean ispost;
@@ -9,11 +11,29 @@ public class Notification {
     public Notification(){
     }
 
-    public Notification(String userid, String text, String postid, boolean ispost) {
+    public Notification(String idNotification, String useridanh, String userid, String text, String postid, boolean ispost) {
+        this.idNotification = idNotification;
+        this.useridanh = useridanh;
         this.userid = userid;
         this.text = text;
         this.postid = postid;
         this.ispost = ispost;
+    }
+
+    public String getIdNotification() {
+        return idNotification;
+    }
+
+    public void setIdNotification(String idNotification) {
+        this.idNotification = idNotification;
+    }
+
+    public String getUseridanh() {
+        return useridanh;
+    }
+
+    public void setUseridanh(String useridanh) {
+        this.useridanh = useridanh;
     }
 
     public String getUserid() {

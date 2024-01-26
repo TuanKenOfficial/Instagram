@@ -51,6 +51,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+/** @noinspection ALL*/
 public class PostActivity extends AppCompatActivity {
     private Uri imageUri;
     private String imageUrl = "";
@@ -63,6 +64,8 @@ public class PostActivity extends AppCompatActivity {
     EditText description;
     private static final String TAG = "Post";
     private String saveCurrentData, saveCurrentTime;
+
+    private ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,7 +77,9 @@ public class PostActivity extends AppCompatActivity {
         description = findViewById(R.id.description);
 
         firebaseAuth = FirebaseAuth.getInstance();
-        storageReference = FirebaseStorage.getInstance().getReference("Posts");
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Vui lòng đợi trong giây lát");
+        progressDialog.setCanceledOnTouchOutside(false);
 
         close.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -226,12 +231,17 @@ public class PostActivity extends AppCompatActivity {
     );
 
     private void uploadImageUrl() {
+        progressDialog.setMessage("Đang upload ảnh bài viết");
+        progressDialog.show();
         Log.d(TAG, "uploadImageUrl: ");
         if (imageUri != null){
+            String fileNamePath = "Post/";
+            storageReference = FirebaseStorage.getInstance().getReference(fileNamePath).child(String.valueOf(System.currentTimeMillis()));
             uploadTask = storageReference.putFile(imageUri);
            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    progressDialog.dismiss();
                     Log.d(TAG, "onSuccess: ");
 
                     Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
@@ -240,15 +250,14 @@ public class PostActivity extends AppCompatActivity {
 
                     if(uriTask.isSuccessful()){
                         String Description = description.getText().toString();
-
+                        long timestamp = Utils.getTimestamp();
                         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts");
                         String postId = reference.push().getKey();
 
                         HashMap<String, Object> hashMap = new HashMap<>();
                         hashMap.put("postimage",""+uploadImageUrl);
                         hashMap.put("postid",postId); // id của ảnh đã đăng
-                        hashMap.put("date", saveCurrentData);
-                        hashMap.put("time", saveCurrentTime);
+                        hashMap.put("timestamp", timestamp);
                         hashMap.put("description",Description);
                         hashMap.put("publisher", FirebaseAuth.getInstance().getCurrentUser().getUid());
 
@@ -262,6 +271,7 @@ public class PostActivity extends AppCompatActivity {
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
+                    progressDialog.dismiss();
                     Toast.makeText(PostActivity.this, e.getMessage(),Toast.LENGTH_SHORT).show();
                 }
             });

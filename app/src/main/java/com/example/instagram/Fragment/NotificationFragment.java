@@ -7,9 +7,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.instagram.Adapter.NotificationAdapter;
 import com.example.instagram.Model.Notification;
@@ -31,6 +33,10 @@ public class NotificationFragment extends Fragment {
     private RecyclerView recyclerView;
     private NotificationAdapter notificationAdapter;
     private List<Notification> notificationList;
+    private static final String TAG = "Notification";
+    private String idNotification ="";
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -43,12 +49,12 @@ public class NotificationFragment extends Fragment {
         notificationList = new ArrayList<>();
         notificationAdapter = new NotificationAdapter(getContext(),notificationList);
         recyclerView.setAdapter(notificationAdapter);
-        
+
         readNotification();
         return view;
     }
-
     private void readNotification() {
+        Log.d(TAG, "readNotification: ");
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications").child(firebaseUser.getUid());
         reference.addValueEventListener(new ValueEventListener() {
@@ -68,5 +74,6 @@ public class NotificationFragment extends Fragment {
 
             }
         });
+
     }
 }

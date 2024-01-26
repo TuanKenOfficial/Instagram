@@ -183,17 +183,6 @@ public class ProfileFragment extends Fragment {
 
         return view;
     }
-    //tạo thông báo
-    private void addNotification(){
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications").child(profileid);
-        HashMap<String,Object> hashMap = new HashMap<>();
-        hashMap.put("userid",firebaseUser.getUid());
-        hashMap.put("text", "Đã bắt đầu theo dõi");
-        hashMap.put("postid", "");
-        hashMap.put("ispost", true);
-
-        reference.push().setValue(hashMap);
-    }
 
     private void checkFollow(){
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Follow")
