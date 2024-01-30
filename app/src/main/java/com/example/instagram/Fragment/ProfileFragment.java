@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -44,6 +45,8 @@ public class ProfileFragment extends Fragment {
     TextView posts, followers, following, fullname, bio , username;
     Button edit_profile;
 
+    LinearLayout lvFollowing, lvFollower;
+
     RecyclerView recyclerView;
     PhoToAdapter phoToAdapter;
     List<Post> postList;
@@ -62,7 +65,9 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile,container,false);
+
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        //có liên quan đến dòng 166 bên PostAdapter
         SharedPreferences prefs = getContext().getSharedPreferences("PREFS", Context.MODE_PRIVATE);
         profileid =  prefs.getString("profileid", "none");
 
@@ -70,7 +75,9 @@ public class ProfileFragment extends Fragment {
         options = view.findViewById(R.id.options);
         posts = view.findViewById(R.id.posts);
         followers = view.findViewById(R.id.followers);
+        lvFollower = view.findViewById(R.id.lvFollower);
         following = view.findViewById(R.id.following);
+        lvFollowing = view.findViewById(R.id.lvFollowing);
         fullname = view.findViewById(R.id.fullname);
         bio = view.findViewById(R.id.bio);
         username = view.findViewById(R.id.username);
@@ -117,13 +124,13 @@ public class ProfileFragment extends Fragment {
                 String btn = edit_profile.getText().toString();
                 if (btn.equals("Chỉnh sửa trang cá nhân")){
                    startActivity(new Intent(getContext(), EditProfileActivity.class));
-                }else if (btn.equals("Follower")){
+                }else if (btn.equals("Theo dõi")){
                     FirebaseDatabase.getInstance().getReference().child("Follow").child(firebaseUser.getUid())
                             .child("Following").child(profileid).setValue(true);
                     FirebaseDatabase.getInstance().getReference().child("Follow").child(profileid)
                             .child("Follower").child(firebaseUser.getUid()).setValue(true);
 
-                }else if (btn.equals("Following")){
+                }else if (btn.equals("Đang theo dõi")){
                     FirebaseDatabase.getInstance().getReference().child("Follow").child(firebaseUser.getUid())
                             .child("Following").child(profileid).removeValue();
                     FirebaseDatabase.getInstance().getReference().child("Follow").child(profileid)
@@ -141,7 +148,7 @@ public class ProfileFragment extends Fragment {
                 recyclerView_saves.setVisibility(View.GONE);
             }
         });
-        //save hình ảnh
+        //lưu hình ảnh
         saved_photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -152,22 +159,24 @@ public class ProfileFragment extends Fragment {
         /*
          * Load followers , following từ FollowersActivity*/
         //followers
-        followers.setOnClickListener(new View.OnClickListener() {
+        lvFollower.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //truyền dữ liệu qua FollowersActivity
                 Intent intent = new Intent(getContext(), FollowersActivity.class);
                 intent.putExtra("id",profileid);
-                intent.putExtra("title", "Follower");
+                intent.putExtra("title", "Theo dõi"); //truyền title
                 startActivity(intent);
             }
         });
         //following
-        following.setOnClickListener(new View.OnClickListener() {
+        lvFollowing.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //truyền dữ liệu qua FollowersActivity
                 Intent intent = new Intent(getContext(), FollowersActivity.class);
                 intent.putExtra("id",profileid);
-                intent.putExtra("title", "Following");
+                intent.putExtra("title", "Đang theo dõi");//truyền title
                 startActivity(intent);
             }
         });
@@ -191,9 +200,9 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot datasnapshot) {
                 if (datasnapshot.child(profileid).exists()){
-                    edit_profile.setText("Following");
+                    edit_profile.setText("Đang theo dõi");
                 }else {
-                    edit_profile.setText("Follower");
+                    edit_profile.setText("Theo dõi");
                 }
             }
 
@@ -253,7 +262,7 @@ public class ProfileFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot datasnapshot) {
-                followers.setText(""+datasnapshot.getChildrenCount());
+                followers.setText(""+datasnapshot.getChildrenCount()); // tăng/giảm số lượng theo dõi
             }
 
             @Override
@@ -269,7 +278,7 @@ public class ProfileFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot datasnapshot) {
-                following.setText(""+datasnapshot.getChildrenCount());
+                following.setText(""+datasnapshot.getChildrenCount());// tăng/giảm số lượng đang theo dõi
             }
 
             @Override

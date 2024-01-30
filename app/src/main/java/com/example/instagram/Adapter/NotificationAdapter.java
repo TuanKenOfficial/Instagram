@@ -48,7 +48,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
         final Notification notification = mNotification.get(position);
         viewHolder.text.setText(notification.getText());
-        getUser(viewHolder.image_profile, viewHolder.username,notification.getUseridanh());
+        getUser(viewHolder.image_profile, viewHolder.username,notification.getUserid());
 
         if (notification.isIspost()){
             viewHolder.post_image.setVisibility(View.VISIBLE);
@@ -91,6 +91,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
         }
     }
+    //load user hình, tên
     private void getUser(final ImageView imageView ,final TextView username, String userid){
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
         reference.addValueEventListener(new ValueEventListener() {
@@ -107,13 +108,14 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             }
         });
     }
+    //load hình ảnh
     private void getPostImage(ImageView imageView , String postid){
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts").child(postid);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot datasnapshot) {
                 Post post = datasnapshot.getValue(Post.class);
-                Picasso.get().load(post.getPostimage()).placeholder(R.mipmap.ic_launcher).into(imageView);
+                Picasso.get().load(post.getPostimage()).placeholder(R.drawable.image).into(imageView);
             }
 
             @Override

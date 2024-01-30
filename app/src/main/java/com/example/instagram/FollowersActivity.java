@@ -25,15 +25,17 @@ public class FollowersActivity extends AppCompatActivity {
 
     String id, title;
 
-    List<String>idList;
+    List<String> idList;
     RecyclerView recyclerView;
     UserAdapter userAdapter;
     List<User> userList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_followers);
 
+        //nhận dữ liệu bên Profile Fragment dòng 160 và 171
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
         title = intent.getStringExtra("title");
@@ -53,18 +55,19 @@ public class FollowersActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         userList = new ArrayList<>();
-        userAdapter = new UserAdapter(this, userList,false);
+        userAdapter = new UserAdapter(this, userList, false);
         recyclerView.setAdapter(userAdapter);
         idList = new ArrayList<>();
 
-        switch (title){
-            case "Like":
+        switch (title) {
+            case "Lượt thích": //nhận title dòng 218 bên PostAdapter
                 getLikes();
                 break;
-            case  "Following":
+
+            case "Đang theo dõi": //nhận title dòng 172 bên ProfileFragment
                 getFollowing();
                 break;
-            case "Follower":
+            case "Theo dõi": //nhận title dòng 162 bên ProfileFragment
                 getFollowers();
                 break;
             case "lượt xem":
@@ -72,15 +75,16 @@ public class FollowersActivity extends AppCompatActivity {
                 break;
         }
     }
+
     //view story
-    private void getViews(){
+    private void getViews() {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Story")
                 .child(id).child(getIntent().getStringExtra("storyid")).child("lượt xem");
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 idList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     idList.add(snapshot.getKey());
                 }
                 showUsers();
@@ -101,7 +105,7 @@ public class FollowersActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 idList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     idList.add(snapshot.getKey());
                 }
                 showUsers();
@@ -113,6 +117,7 @@ public class FollowersActivity extends AppCompatActivity {
             }
         });
     }
+
     //following
     private void getFollowing() {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Follow")
@@ -121,7 +126,7 @@ public class FollowersActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 idList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     idList.add(snapshot.getKey());
                 }
                 showUsers();
@@ -133,6 +138,7 @@ public class FollowersActivity extends AppCompatActivity {
             }
         });
     }
+
     //followers
     private void getFollowers() {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Follow")
@@ -141,7 +147,7 @@ public class FollowersActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 idList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     idList.add(snapshot.getKey());
                 }
                 showUsers();
@@ -153,23 +159,25 @@ public class FollowersActivity extends AppCompatActivity {
             }
         });
     }
+
     //user
-    private void showUsers(){
+    private void showUsers() {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 userList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     User user = snapshot.getValue(User.class);
-                    for (String id : idList){
-                        if (user.getId().equals(id)){
+                    for (String id : idList) {
+                        if (user.getId().equals(id)) {
                             userList.add(user);
                         }
                     }
                     userAdapter.notifyDataSetChanged();
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 

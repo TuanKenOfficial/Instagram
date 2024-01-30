@@ -28,6 +28,7 @@ import com.example.instagram.Fragment.ProfileFragment;
 import com.example.instagram.Model.Post;
 import com.example.instagram.Model.User;
 import com.example.instagram.R;
+import com.example.instagram.ShareImageActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -100,7 +101,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         getComments(post.getPostid(), viewHolder.comments);
         isSaved(post.getPostid(), viewHolder.save);
 
-        //save , like , comment , publisher, username
+        //save , like , comment ,share, publisher, username
         viewHolder.save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -121,8 +122,23 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                     FirebaseDatabase.getInstance().getReference().child("Like").child(post.getPostid())
                             .child(firebaseUser.getUid()).setValue(true);
                     //tạo thông báo
-                    addNotification(post.getPostid(), post.getPublisher());
-                    Log.d(TAG, "onClick: "+post.getPublisher());
+                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notification");
+                    reference.orderByChild("userid").equalTo(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            mContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit().putString("postid", post.getPostid()).apply();
+                            mContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit().putString("userid", firebaseUser.getUid()).apply();
+                            addNotification(post.getPostid(), post.getPublisher());
+                            Log.d(TAG, "onClick: publisher: "+post.getPublisher());
+                            Log.d(TAG, "onClick: postid: "+post.getPostid());
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
                 } else {
                     FirebaseDatabase.getInstance().getReference().child("Like").child(post.getPostid())
                             .child(firebaseUser.getUid()).removeValue();
@@ -150,9 +166,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             }
         });
 
+        viewHolder.share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: share");
+                moreOptionsDialog(post, viewHolder);
+            }
+        });
+
         viewHolder.image_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d(TAG, "onClick: image_profile");
+                //lưu ý tên PREFS bên ProfileFragment
                 mContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit().putString("profileid", post.getPublisher()).apply();
                 ((FragmentActivity) mContext).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new ProfileFragment()).commit();
@@ -191,7 +217,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, FollowersActivity.class);
                 intent.putExtra("id", post.getPostid());
-                intent.putExtra("title", "Like");
+                intent.putExtra("title", "Lượt thích");
                 mContext.startActivity(intent);
             }
         });
@@ -235,6 +261,27 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                 popupMenu.show();
             }
         });
+
+    }
+
+    private void moreOptionsDialog(Post post, ViewHolder viewHolder) {
+        Log.d(TAG, "moreOptionsDialog: ");
+        String postid = post.getPostid();
+        /*Những thứ ở đây chưa dùng đến
+         * Và sẽ dùng trong những chức năng sau*/
+        String postimage = post.getPostimage();
+        String description = post.getDescription();
+        String publisher = post.getPublisher();
+        long timestamp = post.getTimestamp();
+
+        Intent intent = new Intent(mContext, ShareImageActivity.class);
+        intent.putExtra("postid", postid);
+        intent.putExtra("postimage", postimage);
+        intent.putExtra("description", description);
+        intent.putExtra("publisher", publisher);
+        intent.putExtra("timestamp", timestamp);
+        mContext.startActivity(intent);
+
 
     }
 
@@ -285,14 +332,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         String idNotification = reference.push().getKey();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("idNotification",idNotification);
-        hashMap.put("useridanh",firebaseUser.getUid());
-        hashMap.put("userid", publisher);
+        hashMap.put("postUserid",publisher); // uid người đăng ảnh có nghĩa là chủ bức ảnh đăng lên
+        hashMap.put("userid", firebaseUser.getUid()); // uid người dùng khác thích ảnh
         hashMap.put("text", "thích ảnh của bạn");
         hashMap.put("postid", postid);
         hashMap.put("ispost", true);
 
 
-        reference.child(firebaseUser.getUid()).child(idNotification).setValue(hashMap);
+        reference.child(publisher).child(idNotification).setValue(hashMap);
 
 
     }
@@ -431,7 +478,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        public ImageView image_profile, post_image , like, comment, save, more;
+        public ImageView image_profile, post_image , like, comment, save, more,share;
         public TextView username, likes, publisher, description,comments;
         public ViewHolder(@NonNull View itemView){
             super(itemView);
@@ -447,6 +494,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             comments =itemView.findViewById(R.id.comments);
             username =itemView.findViewById(R.id.username);
             more = itemView.findViewById(R.id.more);
+            share = itemView.findViewById(R.id.share);
         }
     }
 }

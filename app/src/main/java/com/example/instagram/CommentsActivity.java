@@ -134,13 +134,13 @@ public class CommentsActivity extends AppCompatActivity {
         String idNotification = reference.push().getKey();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("idNotification",idNotification);
-        hashMap.put("useridanh",firebaseUser.getUid());
-        hashMap.put("userid", publisher);
-        hashMap.put("text", "đã bình luận về bài viết");
+        hashMap.put("postUserid",publisher);
+        hashMap.put("userid", firebaseUser.getUid());// uid người dùng khác bình luận ảnh bạn
+        hashMap.put("text", "đã bình luận về bài viết");// uid người đăng ảnh có nghĩa là chủ bức ảnh đăng lên
         hashMap.put("postid", postid);
         hashMap.put("ispost", true);
 
-        reference.child(firebaseUser.getUid()).child(idNotification).setValue(hashMap);
+        reference.child(publisher).child(idNotification).setValue(hashMap);
     }
     //tạo ảnh user comment
     private void getUserImage(){

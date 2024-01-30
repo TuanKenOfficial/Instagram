@@ -2,6 +2,7 @@ package com.example.instagram.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +14,10 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.example.instagram.Fragment.NotificationFragment;
 import com.example.instagram.Fragment.ProfileFragment;
 import com.example.instagram.MainActivity;
+import com.example.instagram.Model.Post;
 import com.example.instagram.Model.User;
 import com.example.instagram.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,17 +34,19 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
+public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     private Context mContext;
     private List<User> mUsers;
     private boolean isfragment;
 
     private FirebaseUser firebaseUser;
 
-    public UserAdapter(Context mContext, List<User> mUsers, boolean isfragment){
-        this.mUsers= mUsers;
-        this.mContext=mContext;
-        this.isfragment=isfragment;
+    private static final String TAG = "UserAdapter";
+
+    public UserAdapter(Context mContext, List<User> mUsers, boolean isfragment) {
+        this.mUsers = mUsers;
+        this.mContext = mContext;
+        this.isfragment = isfragment;
     }
 
 
@@ -54,13 +59,16 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
+
+
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         final User user = mUsers.get(position);
         viewHolder.btn.setVisibility(View.VISIBLE);
         viewHolder.username.setText(user.getUsername());
         viewHolder.fullname.setText(user.getFullname());
 
-        isFollowed(user.getId(), viewHolder.btn);
+        isFollow(user.getId(), viewHolder.btn);
+
         if (user.getId().equals(firebaseUser.getUid())) {
             viewHolder.btn.setVisibility(View.GONE);
         }
@@ -75,19 +83,19 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
                     mContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit().putString("profileid", user.getId()).apply();
                     ((FragmentActivity) mContext).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                             new ProfileFragment()).commit();
-                }else {
+                } else {
                     Intent intent = new Intent(mContext, MainActivity.class);
-                    intent.putExtra("publisherid",user.getId());
+                    intent.putExtra("publisherid", user.getId());
                     mContext.startActivity(intent);
                 }
             }
         });
 
-        //follow and bỏ follow
+        //follow and bỏ follow kiểm tra điều kiện
         viewHolder.btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (viewHolder.btn.getText().toString().equals("Follower")) {
+                if (viewHolder.btn.getText().toString().equals("Theo dõi")) {
                     FirebaseDatabase.getInstance().getReference().child("Follow").child(firebaseUser.getUid())
                             .child("Following").child(user.getId()).setValue(true);
                     FirebaseDatabase.getInstance().getReference().child("Follow").child(user.getId())
@@ -106,20 +114,19 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
         });
 
 
-
-
     }
-    private void isFollowed(String id, Button btn) {
+
+    //load text theo dõi/đang theo dõi
+    private void isFollow(String id, Button btn) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Follow").child(firebaseUser.getUid())
                 .child("Following");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.child(id).exists())
-                    btn.setText("Following");
+                    btn.setText("Đang theo dõi");
                 else
-                    btn.setText("Follower");
-
+                    btn.setText("Theo dõi");
             }
 
             @Override
@@ -128,30 +135,34 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
             }
         });
     }
-        //Notification
-        private void addNotification(String userid) {
-            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications");
-            String idNotification = reference.push().getKey();
-            HashMap<String, Object> hashMap = new HashMap<>();
-            hashMap.put("idNotification",idNotification);
-            hashMap.put("userid", userid);
-            hashMap.put("useridanh",firebaseUser.getUid());
-            hashMap.put("text", "đã bắt đầu theo dõi bạn");
-            hashMap.put("ispost", true);
 
-            reference.child(firebaseUser.getUid()).child(idNotification).setValue(hashMap);
-        }
+    //Notification
+    private void addNotification(String userid) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications");
+        String idNotification = reference.push().getKey();
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("idNotification", idNotification);
+        hashMap.put("userid", firebaseUser.getUid()); // uid người dùng khác follow bạn
+        hashMap.put("postUserid", userid); // uid người đăng ảnh có nghĩa là chủ bức ảnh đăng lên
+        hashMap.put("postid", "");
+        hashMap.put("text", "đã bắt đầu theo dõi bạn");
+        hashMap.put("ispost", true);
+
+        reference.child(userid).child(idNotification).setValue(hashMap);
+    }
 
     @Override
     public int getItemCount() {
-        return  mUsers.size();
+        return mUsers.size();
     }
-    public class ViewHolder extends RecyclerView.ViewHolder{
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
         public CircleImageView image_profile;
         public TextView username;
         public TextView fullname;
         public Button btn;
-        public ViewHolder(@NonNull View itemView){
+
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
             image_profile = itemView.findViewById(R.id.image_profile);
             username = itemView.findViewById(R.id.username);

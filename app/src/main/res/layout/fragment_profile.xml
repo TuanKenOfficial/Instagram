@@ -102,6 +102,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
+                            android:id="@+id/lvFollower"
                             android:layout_marginLeft="8dp">
                             <TextView
                                 android:layout_width="wrap_content"
@@ -122,6 +123,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="8dp"
+                            android:id="@+id/lvFollowing"
                             android:orientation="vertical">
 
                             <TextView

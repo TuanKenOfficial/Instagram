@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 
+import com.example.instagram.Adapter.UserAdapter;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -262,6 +263,9 @@ public class PostActivity extends AppCompatActivity {
                         hashMap.put("publisher", FirebaseAuth.getInstance().getCurrentUser().getUid());
 
                         reference.child(postId).setValue(hashMap); // đẩy lên realtime database
+                        Intent intent = new Intent(PostActivity.this, UserAdapter.class);
+                        intent.putExtra("postid",postId);
+                        startActivity(intent);
                         // câu lệnh thông báo và chuyển activity , kết thúc cái progressbar
                         Toast.makeText(PostActivity.this, "Upload thành công", Toast.LENGTH_SHORT).show();
 
@@ -279,6 +283,7 @@ public class PostActivity extends AppCompatActivity {
             Toast.makeText(this,"Upload không thành công!! Bạn chưa chọn ảnh",Toast.LENGTH_LONG).show();
         }
     }
+
 }
 
 

@@ -1,5 +1,8 @@
 package com.example.instagram.Fragment;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -34,9 +37,7 @@ public class NotificationFragment extends Fragment {
     private NotificationAdapter notificationAdapter;
     private List<Notification> notificationList;
     private static final String TAG = "Notification";
-    private String idNotification ="";
-    private FirebaseAuth firebaseAuth;
-    private FirebaseUser firebaseUser;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -49,21 +50,24 @@ public class NotificationFragment extends Fragment {
         notificationList = new ArrayList<>();
         notificationAdapter = new NotificationAdapter(getContext(),notificationList);
         recyclerView.setAdapter(notificationAdapter);
-
-        readNotification();
+        readNotification(); //load thong bao len fragment
         return view;
     }
+
+    //nó bị lỗi 1 chút ở chỗ thông báo
     private void readNotification() {
         Log.d(TAG, "readNotification: ");
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications").child(firebaseUser.getUid());
-        reference.addValueEventListener(new ValueEventListener() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications");
+        reference.child(firebaseUser.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot datasnapshot) {
                 notificationList.clear();
                 for (DataSnapshot snapshot : datasnapshot.getChildren()){
+                    Log.d(TAG, "onDataChange: ");
                     Notification notification=snapshot.getValue(Notification.class);
                     notificationList.add(notification);
+
                 }
                 Collections.reverse(notificationList);
                 notificationAdapter.notifyDataSetChanged();
