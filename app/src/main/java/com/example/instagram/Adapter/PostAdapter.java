@@ -279,7 +279,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         intent.putExtra("postimage", postimage);
         intent.putExtra("description", description);
         intent.putExtra("publisher", publisher);
-        intent.putExtra("timestamp", timestamp);
         mContext.startActivity(intent);
 
 

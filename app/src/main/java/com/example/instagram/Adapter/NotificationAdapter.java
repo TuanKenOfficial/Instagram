@@ -1,11 +1,15 @@
 package com.example.instagram.Adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
@@ -17,6 +21,8 @@ import com.example.instagram.Model.Notification;
 import com.example.instagram.Model.Post;
 import com.example.instagram.Model.User;
 import com.example.instagram.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -69,6 +75,50 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                             new ProfileFragment()).commit();
                 }
             }
+        });
+
+        //nhấn that lâu để xoá thông báo
+        viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                AlertDialog.Builder alers = new AlertDialog.Builder(mContext);
+                //thiết lập tiêu đề:
+                alers.setTitle("Xoá thông");
+                //thiết lập icon:
+                alers.setIcon(R.drawable.story_delete);
+                //thiết lập nội dung cho dialog:
+                alers.setMessage("Bạn có chắc chắn muốn xoá thông báo này?");
+                //thiết lập các nút lệnh để người dùng tương tác:
+                alers.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications");
+                        reference.child(firebaseAuth.getUid()).child(notification.getIdNotification()).removeValue()
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Toast.makeText(mContext, "Xoá", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                    }
+                });
+                alers.setNegativeButton("Không", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+                //tạo cửa sổ Dialog:
+                AlertDialog dialog=alers.create();
+                dialog.setCanceledOnTouchOutside(false);
+                //hiển thị cửa sổ này lên:
+                dialog.show();
+
+               return false;
+            }
+
         });
     }
 
