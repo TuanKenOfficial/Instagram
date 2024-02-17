@@ -21,6 +21,8 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.example.instagram.BaoCaoActivity;
+import com.example.instagram.ChatActivity;
 import com.example.instagram.CommentsActivity;
 import com.example.instagram.FollowersActivity;
 import com.example.instagram.Fragment.PostDetailFragment;
@@ -246,7 +248,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                                         });
                                 return true;
                             case R.id.report:
-                                editBaoCao(post.getPublisher(), post.getPostid(), post.getDescription());
+                                Intent intent = new Intent(mContext, BaoCaoActivity.class);
+                                mContext.startActivity(intent);
                                 return true;
                             default:
                                 return false;
@@ -259,6 +262,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                     popupMenu.getMenu().findItem(R.id.delete).setVisible(false);
                 }
                 popupMenu.show();
+            }
+        });
+        viewHolder.chats.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, ChatActivity.class);
+                intent.putExtra("receiptUid", post.getPublisher());
+                mContext.startActivity(intent);
             }
         });
 
@@ -477,7 +488,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        public ImageView image_profile, post_image , like, comment, save, more,share;
+        public ImageView image_profile, post_image , like, comment, save, more,share,chats;
         public TextView username, likes, publisher, description,comments;
         public ViewHolder(@NonNull View itemView){
             super(itemView);
@@ -494,6 +505,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             username =itemView.findViewById(R.id.username);
             more = itemView.findViewById(R.id.more);
             share = itemView.findViewById(R.id.share);
+            chats = itemView.findViewById(R.id.chats);
         }
     }
 }

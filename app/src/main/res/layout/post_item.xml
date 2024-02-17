@@ -76,6 +76,13 @@
                 android:layout_marginStart="10dp"
                 android:layout_toEndOf="@id/comment"
                 android:src="@drawable/ic_share" />
+            <ImageView
+                android:id="@+id/chats"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_toRightOf="@id/share"
+                android:padding="5dp"
+                android:src="@drawable/ic_chat" />
 
             <ImageView
                 android:id="@+id/save"

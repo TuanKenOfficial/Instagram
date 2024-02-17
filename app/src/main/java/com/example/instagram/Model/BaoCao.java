@@ -1,49 +1,60 @@
 package com.example.instagram.Model;
 
 public class BaoCao {
-    private String id;
-    private String baocao;
-    private String publisher;
-    private String username;
+    private String postid;
+    private String uid;
+    private String reason;
+    private String time;
+    private String date;
 
-    public BaoCao(String id, String baocao, String publisher, String username) {
-        this.id = id;
-        this.baocao = baocao;
-        this.publisher = publisher;
-        this.username = username;
+    public BaoCao(String postid, String uid, String reason, String time, String date) {
+        this.postid = postid;
+        this.uid = uid;
+        this.reason = reason;
+        this.time = time;
+        this.date = date;
     }
+
     public BaoCao(){
     }
 
-    public String getId() {
-        return id;
+    public String getPostid() {
+        return postid;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setPostid(String postid) {
+        this.postid = postid;
     }
 
-    public String getBaocao() {
-        return baocao;
+    public String getUid() {
+        return uid;
     }
 
-    public void setBaocao(String baocao) {
-        this.baocao = baocao;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
-    public String getPublisher() {
-        return publisher;
+    public String getReason() {
+        return reason;
     }
 
-    public void setPublisher(String publisher) {
-        this.publisher = publisher;
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
-    public String getUsername() {
-        return username;
+    public String getTime() {
+        return time;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

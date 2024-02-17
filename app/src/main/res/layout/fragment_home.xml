@@ -33,14 +33,6 @@
                     android:textSize="20dp"
                     android:textStyle="bold" />
 
-                <ImageView
-                    android:id="@+id/chats"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_margin="10dp"
-                    android:padding="5dp"
-                    android:layout_alignParentEnd="true"
-                    android:src="@drawable/ic_chat" />
 
             </RelativeLayout>
         </androidx.appcompat.widget.Toolbar>

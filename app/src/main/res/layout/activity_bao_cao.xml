@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    tools:context=".BaoCaoActivity"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tại sao bạn báo cáo bài viết này?"
+        android:gravity="center"
+        android:textSize="20dp"
+        android:textStyle="bold"/>
+    <CheckBox
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Đây là spam"
+        android:id="@+id/chk1"
+        android:textSize="20sp"
+        />
+    <CheckBox
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ảnh khoả thân hoặc hoạt động tình dục"
+        android:id="@+id/chk2"
+        android:textSize="20sp"
+        />
+    <CheckBox
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bạo lực hoặc tổ chức nguy hiểm"
+        android:id="@+id/chk3"
+        android:textSize="20sp"
+        />
+    <CheckBox
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Thông tin sai sự thật"
+        android:id="@+id/chk4"
+        android:textSize="20sp"
+        />
+    <CheckBox
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Chỉ là tôi không thích nội dung này"
+        android:id="@+id/chk5"
+        android:textSize="20sp"
+        />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Huỷ"
+            android:layout_marginRight="10dp"
+            android:textColor="@color/colorUsername"
+            android:id="@+id/btn_huy"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Báo Cáo"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/colorUsername"
+            android:id="@+id/btn_baocao"/>
+
+
+    </LinearLayout>
+
+</LinearLayout>
