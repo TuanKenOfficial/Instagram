@@ -44,7 +44,7 @@ public class RegisterActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-        binding.loginLabelTv.setOnClickListener(view -> startActivity(new Intent(RegisterActivity.this, LoginActivity.class)));
+        binding.noAccountTv.setOnClickListener(view -> startActivity(new Intent(RegisterActivity.this, LoginActivity.class)));
 
         binding.registerBtn.setOnClickListener(view -> {
             pd = new ProgressDialog(RegisterActivity.this);
