@@ -1,26 +1,31 @@
 package com.example.instagram;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.MimeTypeMap;
-import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 
 import com.example.instagram.databinding.ActivityAddStoryBinding;
-import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -32,10 +37,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
-import com.yalantis.ucrop.UCrop;
 
-import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
 
 public class AddStoryActivity extends AppCompatActivity {
     private Uri mImageUri;
@@ -61,7 +65,6 @@ public class AddStoryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showImagePickOption();
-
             }
         });
 
@@ -81,24 +84,119 @@ public class AddStoryActivity extends AppCompatActivity {
                 int itemId = item.getItemId();
                 if (itemId == 1) {
                     Log.d(TAG, "onMenuItemClick: Mở camera, check camera");
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//                        requestCameraPemissions.launch(new String[]{android.Manifest.permission.CAMERA});
-//                    } else {
-//                        requestCameraPemissions.launch(new String[]{android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE});
-//                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        requestCameraPemissions.launch(new String[]{android.Manifest.permission.CAMERA});
+                    } else {
+                        requestCameraPemissions.launch(new String[]{android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE});
+                    }
                 } else if (itemId == 2) {
                     Log.d(TAG, "onMenuItemClick: Mở storage, check storage");
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//                        pickFromGallery();
-//                    } else {
-//                        requestStoragePemissions.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-//                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        pickFromGallery();
+                    } else {
+                        requestStoragePemissions.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                    }
                 }
                 return false;
             }
         });
-//        publishStory();
+
     }
+    //xu ly quyen camera tren dien thoai
+    private ActivityResultLauncher<String[]> requestCameraPemissions = registerForActivityResult(
+            new ActivityResultContracts.RequestMultiplePermissions(),
+            new ActivityResultCallback<Map<String, Boolean>>() {
+
+                @Override
+                public void onActivityResult(Map<String, Boolean> result) {
+                    Log.d(TAG, "onActivityResult: " + result.toString());
+                    boolean areAllGranted = true;
+                    for (Boolean isGranted : result.values()) {
+                        areAllGranted = areAllGranted && isGranted;
+                    }
+                    if (areAllGranted) {
+                        Log.d(TAG, "onActivityResult: Tất cả quyền camera & storage");
+                        pickFromCamera();
+                    } else {
+                        Log.d(TAG, "onActivityResult: Tất cả hoặc chỉ có một quyền");
+                        Toast.makeText(AddStoryActivity.this, "Quyền camera hoặc storage", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+    );
+    //xu ly quyen thư viện tren dien thoai
+    private ActivityResultLauncher<String> requestStoragePemissions = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            new ActivityResultCallback<Boolean>() {
+                @Override
+                public void onActivityResult(Boolean isGranted) {
+                    if (isGranted) {
+                        pickFromGallery();
+                    } else {
+                        Toast.makeText(AddStoryActivity.this, "Quyền Storage chưa cấp quyền", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+    );
+
+    private void pickFromGallery() {
+        Log.d(TAG, "pickFromGallery: ");
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        galleryActivityResultLaucher.launch(intent);
+    }
+
+    private ActivityResultLauncher<Intent> galleryActivityResultLaucher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+
+                        Intent data = result.getData();
+                        mImageUri = data.getData();
+                        binding.storyPhoto.setImageURI(mImageUri);
+                        Log.d(TAG, "onActivityResult: Hình ảnh thư viện: " + mImageUri);
+                        publishStory();
+                    } else {
+                        Toast.makeText(AddStoryActivity.this, "Hủy", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+    );
+
+
+    private void pickFromCamera() {
+        Log.d(TAG, "pickFromCamera: ");
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MediaStore.Images.Media.TITLE, "Temp_Image Title");
+        contentValues.put(MediaStore.Images.Media.DESCRIPTION, "Temp_Image Description");
+
+
+        mImageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
+        cameraActivityResultLaucher.launch(intent);
+
+    }
+
+    private ActivityResultLauncher<Intent> cameraActivityResultLaucher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+
+                        binding.storyPhoto.setImageURI(mImageUri);
+                        Log.d(TAG, "onActivityResult: Camera" + mImageUri);
+                        publishStory();
+                    } else {
+                        Toast.makeText(AddStoryActivity.this, "Hủy", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+    );
 
     private void publishStory(){
         ProgressDialog progressDialog = new ProgressDialog(this);
@@ -155,17 +253,4 @@ public class AddStoryActivity extends AppCompatActivity {
 
     }
 
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
-            Log.d(TAG, "onActivityResult: 111");
-            mImageUri= UCrop.getOutput(data);
-            publishStory();
-        } else if (resultCode == UCrop.RESULT_ERROR) {
-            Log.d(TAG, "onActivityResult: 222");
-            final Throwable cropError = UCrop.getError(data);
-        }
-    }
 }
