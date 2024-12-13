@@ -82,6 +82,7 @@ public class StoryActivity extends AppCompatActivity implements StoriesProgressV
         seen.setVisibility(View.GONE);
         delete.setVisibility(View.GONE);
 
+        //lấy intent
         userid = getIntent().getStringExtra("userid");
 
         if (userid.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){

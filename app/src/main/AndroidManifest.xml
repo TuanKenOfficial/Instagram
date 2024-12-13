@@ -64,9 +64,10 @@
             </intent-filter>
         </activity>
         <!--Thư viện Cropper hình ảnh-->
+        <!-- Theme is optional and only needed if default theme has no action bar. -->
         <activity
-            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat" />
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait" />
         <!--Provider chia sẻ hình ảnh-->
         <provider
             android:name="androidx.core.content.FileProvider"

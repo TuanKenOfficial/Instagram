@@ -1,19 +1,27 @@
 package com.example.instagram.Adapter;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.instagram.AddStoryActivity;
+import com.example.instagram.EditProfileActivity;
 import com.example.instagram.Model.Story;
 import com.example.instagram.Model.User;
 import com.example.instagram.R;
@@ -32,6 +40,8 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder> 
 
     private Context mContext;
     private List<Story> mStory;
+
+    private static final String TAG = "StoryAdapter";
 
     public StoryAdapter(Context mContext, List<Story> mStory) {
         this.mContext = mContext;
@@ -60,6 +70,7 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder> 
         }
         if (viewHolder.getAdapterPosition() == 0){
             myStory(viewHolder.addstory_text, viewHolder.story_add, false);
+            Log.d(TAG, "onBindViewHolder: 222");
         }
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,7 +113,7 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder> 
         }
         return 1;
     }
-
+   
     private void userInfo(ViewHolder viewHolder , String userid , int pos){
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
         reference.addValueEventListener(new ValueEventListener() {
